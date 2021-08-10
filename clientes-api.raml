@@ -1,0 +1,72 @@
+#%RAML 1.0
+title: clientes-api
+version: v1
+mediaType: application/json #Indicar que a API deverá trabalhar com json
+
+types: #Entidades que sao como entidade como no Java.
+  Cliente: #Declaração de uma entidade cliente
+    properties:
+      codigo: #Declaração da propriedade código que é numerico não obrigatório
+        required: false #Nao eh obrigatorio
+        type: number #Este campo eh o tipo numerico
+      nome: #Declaração da propriedade nome que é uma string
+        type: string
+      email: #Declaração da propriedade email que é uma string com uma validação por regex
+        type: string
+        pattern: ^[a-z0-9.]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$
+    example: #Declaração de um exemplo
+      codigo: 1
+      nome: Cliente 01
+      email: cliente01@email.com.br
+  Mensagem: #Declaração de uma entidade para o retorno
+    properties:
+      mensagem: 
+        type: string
+
+/clientes: #Recurso de clientes
+  get: #Método que lista dos os clientes
+    queryParameters: #Parâmetero de entrada, ou seja, na URL, vai solicitar os campos...
+      nome:                
+        required: false
+        type: string
+    responses:         
+      200: #Retorno No caso de sucesso    
+        body:
+          type: Cliente[] #Parâmetro de saída uma lista de clientes(entidade)
+      500: #Parâmetro de saída no caso de erro inesperado
+        body:
+          type: Mensagem
+          example:
+            mensagem: Ocorreu um erro inesperado 
+  post: #Método que inclui um novo cliente
+    body: #Parâmetro de entrada um cliente
+      type: Cliente
+    responses: #Resposta da operacao
+      201: #Create - Se foi criado com sucesso    
+        body: #No corpo da requisicao voce vai receber
+          type: Mensagem  #Parâmetro de saída uma mensagem de sucesso | Entidade do tipo Mensagem
+          example: 
+            mensagem: Operação realizada com sucesso #Mesagem que voce recebe no corpo da requisicao
+      400:           
+        body:
+          type: Mensagem
+          example:
+            mensagem: "Cliente inválido"
+               
+  /{id}:
+    put: #Método que altera um cliente
+      body:
+          type: Cliente
+      responses:
+        200:
+          body:
+            type: Mensagem
+            example:
+              mensagem: Operação realizada com sucesso    
+    delete: #Método que exclui um cliente
+      responses:
+        200:   
+          body:
+            type: Mensagem
+            example:
+              mensagem: Operação realizada com sucesso
